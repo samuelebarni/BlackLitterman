@@ -3,6 +3,11 @@ import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas_datareader as web
+import statsmodels.api as sm
+from scipy import stats
+import pylab
+import tabulate from tabulate
+
 
 #print("Definisci il limite commissionale annuo")
 #Spesa_massima_annua=input()
@@ -76,4 +81,31 @@ while (i<lunghezza-1):
     lista_rendimenti_Asset_5 = np.append (lista_rendimenti_Asset_5, [rendimento])
 
     i=i+1
+
+# plt.hist (lista_rendimenti_Asset_1, bins=75, density=False)
+# stringa = 'distribuzione rendimenti' + dataset_Asset[0]
+# plt.title(stringa)
+# plt.show()
+#
+# Shapiro_Wilk_Test= stats.shapiro (lista_rendimenti_Asset_1)
+# p_value= Shapiro_Wilk_Test[1]
+# print('il p-value è', p_value)
+#
+# if p_value <= 0.05 :
+#     print('l ipotesi nulla di normalità è rifiutata')
+# else:
+#     print('l ipotesi nulla di normalità è accettata')
+#
+# sm.qqplot (lista_rendimenti_Asset_1='s', dist= stats.norm, fit=True)
+# stringa = 'grafico QQ di' + dataset_Asset[0]
+# plt.title(stringa)
+# pylab.show ()
+
+var_90=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.1)
+var_95=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.05)
+var_99=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.01)
+
+print(tabulate([['90%', var_90],['95%',var_95],['99%',var_99]],
+               headers= 'livello di confidenza', 'Value at risk' dataset_Asset[0]))
+
 
