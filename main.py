@@ -3,10 +3,11 @@ import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas_datareader as web
+import math as mat
 import statsmodels.api as sm
 from scipy import stats
 import pylab
-import tabulate from tabulate
+import tabulate #from tabulate
 
 
 #print("Definisci il limite commissionale annuo")
@@ -82,6 +83,7 @@ while (i<lunghezza-1):
 
     i=i+1
 
+
 # plt.hist (lista_rendimenti_Asset_1, bins=75, density=False)
 # stringa = 'distribuzione rendimenti' + dataset_Asset[0]
 # plt.title(stringa)
@@ -105,7 +107,143 @@ var_90=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.1)
 var_95=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.05)
 var_99=pd.DataFrame(lista_rendimenti_Asset_1)[0].quantile(0.01)
 
-print(tabulate([['90%', var_90],['95%',var_95],['99%',var_99]],
-               headers= 'livello di confidenza', 'Value at risk' dataset_Asset[0]))
+#print(tabulate([['90%', var_90],['95%',var_95],['99%',var_99]],
+ #              headers= 'livello di confidenza', 'Value at risk' dataset_Asset[0]))
+print(var_90)
+print(var_95)
+print(var_99)
 
+vettore_rendimenti_medi = []
+rendimenti_medi= lista_rendimenti_Asset_1.mean()
+vettore_rendimenti_medi.append([rendimenti_medi])
+
+rendimenti_medi= lista_rendimenti_Asset_2.mean()
+vettore_rendimenti_medi.append([rendimenti_medi])
+
+rendimenti_medi= lista_rendimenti_Asset_3.mean()
+vettore_rendimenti_medi.append([rendimenti_medi])
+
+rendimenti_medi= lista_rendimenti_Asset_4.mean()
+vettore_rendimenti_medi.append([rendimenti_medi])
+
+rendimenti_medi= lista_rendimenti_Asset_5.mean()
+vettore_rendimenti_medi.append([rendimenti_medi])
+
+vettore_varianze=[]
+varianze= lista_rendimenti_Asset_1.var()
+vettore_varianze.append([varianze])
+
+varianze= lista_rendimenti_Asset_2.var()
+vettore_varianze.append([varianze])
+
+varianze= lista_rendimenti_Asset_3.var()
+vettore_varianze.append([varianze])
+
+varianze= lista_rendimenti_Asset_4.var()
+vettore_varianze.append([varianze])
+
+varianze= lista_rendimenti_Asset_5.var()
+vettore_varianze.append([varianze])
+
+fig, ax =plt.subplots(figsize=(8,8))
+plt.rcParams ['lines.markersize'] = 12
+colori = ['red', 'blue', 'green', 'black', 'orange']
+simboli = ['o', '*','^','p','s']
+
+ctr=0
+while ctr<5:
+    ax.scatter (vettore_rendimenti_medi[ctr], vettore_varianze[ctr], c=colori[ctr], marker= simboli[ctr], label=dataset_Asset[ctr])
+    ctr= ctr +1
+
+ax.set_xlabel ('Valore atteso')
+ax.set_ylabel ('Varianza')
+ax.legend()
+plt.show()
+
+data= {dataset_Asset[0]: [0,0,0,0],
+      dataset_Asset[1]: [0,0,0,0],
+      dataset_Asset[2]: [0,0,0,0],
+      dataset_Asset[3]: [0,0,0,0],
+      dataset_Asset[4]: [0,0,0,0]}
+
+tab_cov= pd.DataFrame.from_dict(data, orient='index', columns=[dataset_Asset[0], dataset_Asset[1],dataset_Asset[2], dataset_Asset[3], dataset_Asset[4]])
+
+x1=np.array(lista_rendimenti_Asset_1,lista_rendimenti_Asset_2)
+tab=np.cov(x1)
+
+tab_cov.iloc[0,0]=tab[0,0]
+tab_cov.iloc[1,1]=tab[1,1]
+tab_cov.iloc[0,1]=tab[0,1]
+tab_cov.iloc[1,0]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_1,lista_rendimenti_Asset_3)
+tab=np.cov(x1)
+
+tab_cov.iloc[2,2]=tab[1,1]
+tab_cov.iloc[0,2]=tab[0,1]
+tab_cov.iloc[2,0]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_1,lista_rendimenti_Asset_4)
+tab=np.cov(x1)
+
+tab_cov.iloc[3,3]=tab[1,1]
+tab_cov.iloc[0,3]=tab[0,1]
+tab_cov.iloc[3,0]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_1,lista_rendimenti_Asset_5)
+tab=np.cov(x1)
+
+tab_cov.iloc[4,4]=tab[1,1]
+tab_cov.iloc[0,4]=tab[0,1]
+tab_cov.iloc[4,0]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_2,lista_rendimenti_Asset_3)
+tab=np.cov(x1)
+
+tab_cov.iloc[1,2]=tab[0,1]
+tab_cov.iloc[2,1]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_2,lista_rendimenti_Asset_4)
+tab=np.cov(x1)
+
+tab_cov.iloc[1,3]=tab[0,1]
+tab_cov.iloc[3,1]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_2,lista_rendimenti_Asset_5)
+tab=np.cov(x1)
+
+tab_cov.iloc[1,4]=tab[0,1]
+tab_cov.iloc[4,1]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_3,lista_rendimenti_Asset_4)
+tab=np.cov(x1)
+
+tab_cov.iloc[2,3]=tab[0,1]
+tab_cov.iloc[3,2]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_3,lista_rendimenti_Asset_5)
+tab=np.cov(x1)
+
+tab_cov.iloc[2,4]=tab[0,1]
+tab_cov.iloc[4,2]=tab[1,0]
+
+x1=np.array(lista_rendimenti_Asset_4,lista_rendimenti_Asset_5)
+tab=np.cov(x1)
+
+tab_cov.iloc[3,4]=tab[0,1]
+tab_cov.iloc[4,3]=tab[1,0]
+
+tab_corr=tab_cov.copy()
+i=0
+j=0
+while i<5:
+    j=0
+    while j<5:
+        prodotto_varianze= tab_cov.iloc[i,i]*tab_cov[j,j]
+        tab_corr.iloc[i,j]=tab_cov.iloc[i,j]/mat.sqrt(prodotto_varianze)
+        j=j+1
+    i=i+1
+
+tab_cov.style.set_caption('<b><i>matrice covarianze')
+tab_corr.style.set_caption(('<b><i>matrice indici correlazioni'))
 
