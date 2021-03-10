@@ -247,3 +247,43 @@ while i<5:
 tab_cov.style.set_caption('<b><i>matrice covarianze')
 tab_corr.style.set_caption(('<b><i>matrice indici correlazioni'))
 
+rendimenti=np.empty((5,0), float)
+
+rendimenti= np.append(rendimenti, [(lista_rendimenti_Asset_1.mean()*252)])
+rendimenti= np.append(rendimenti, [(lista_rendimenti_Asset_2.mean()*252)])
+rendimenti= np.append(rendimenti, [(lista_rendimenti_Asset_3.mean()*252)])
+rendimenti= np.append(rendimenti, [(lista_rendimenti_Asset_4.mean()*252)])
+rendimenti= np.append(rendimenti, [(lista_rendimenti_Asset_5.mean()*252)])
+
+num_portafogli= 100000
+risultati = np.zeros((4+len(dataset_Asset)-1, num_portafogli))
+for i in range(num_portafogli):
+    pesi=np.array(np.random.random(5))
+    pesi /= np.sum(pesi)
+
+    rendimento_portafoglio = np.sum(rendimenti*pesi)
+    std_dev_portafoglio= np.sqrt(np.dot(pesi.T, np.dot(tab_cov, pesi)))*np.sqrt(252)
+
+    risultati[0,i] = rendimento_portafoglio
+    risultati[1,i] = std_dev_portafoglio
+    risultati[2,i] = risultati [0,i] / risultati [1,i]
+
+    for j in range(len(pesi)):
+        risultati[j+3,i] = pesi [j]
+
+
+frame_risultati = pd.DataFrame(risultati.T, columns=['ret','stdev','sharpe', dataset_Asset[0], dataset_Asset[1], dataset_Asset[2], dataset_Asset[3],dataset_Asset[4]])
+
+max_sharpe_port = frame_risultati.iloc[frame_risultati['sharpe'].idxmax()]
+min_var_port = frame_risultati.iloc[frame_risultati['stdev'].idxmin()]
+
+plt.figure (figsize=(10,6))
+plt.scatter ( frame_risultati.stdev, frame_risultati.ret, c= frame_risultati.sharpe , marker='.', cmap='coolwarm')
+
+plt.xlabel ('deviazione standard')
+plt.ylabel ('rendimento atteso')
+plt.colorbar (label= 'Sharpe ratio')
+plt.title ('frontiera portafogli')
+
+plt.scatter (max_sharpe_port[1],max_sharpe_port[0], marker=(5,1,0), color='r', s=300)
+plt.scatter(min_var_port[1], min_var_port[0], marker=(5,1,0), color='g', s=300)
